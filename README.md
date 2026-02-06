@@ -128,3 +128,9 @@ PYTHONPATH=src pytest -q
 - Architecture: `docs/ARCHITECTURE.md`
 - Roadmap: `docs/ROADMAP.md`
 - Milestone execution log: `docs/STATUS.md`
+
+## License
+This project uses the Attribution-Required Source License (ARSL) v1.0.
+Any redistribution or derivative work must keep clear attribution to:
+"Original project by hsoffar"
+See `LICENSE` for full terms.

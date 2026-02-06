@@ -1,0 +1,32 @@
+Attribution-Required Source License (ARSL) v1.0
+Copyright (c) 2026 hsoffar
+
+1. Permission
+Permission is granted to use, copy, modify, and distribute this software,
+in source or binary form, for any purpose, provided that all conditions
+below are met.
+
+2. Required Attribution
+Any redistribution or derivative work must include clear attribution to
+the original author in:
+- project documentation (README, docs site, or equivalent), and
+- source distribution (LICENSE/NOTICE or equivalent).
+
+The attribution must include:
+- "Original project by hsoffar"
+- a reference to this repository or original project name.
+
+3. No Removal of Attribution
+You may not remove, hide, or replace required attribution in a way that
+makes authorship unclear or misleading.
+
+4. Warranty Disclaimer
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+5. Limitation of Liability
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.

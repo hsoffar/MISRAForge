@@ -7,6 +7,7 @@ name = "misra-checker"
 version = "0.1.0"
 description = "Local MISRA-oriented static analysis MVP for C/C++"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 authors = [{ name = "MISRA Checker Contributors" }]
 dependencies = [
