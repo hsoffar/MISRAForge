@@ -55,37 +55,39 @@ No copyrighted MISRA rule text is embedded.
 
 ## Setup
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]
+python3.12 -m venv .venv312
+source .venv312/bin/activate
+pip install -e '.[dev]'
 ```
 
 GUI dependency:
 ```bash
-pip install -e .[gui]
+pip install -e '.[gui]'
 ```
+
+This project requires Python `>=3.10` (`pyproject.toml`).
 
 ## CLI usage
 Help:
 ```bash
-python -m misra_checker.cli.main --help
+./run_tool.sh --help
 ```
 
 Repository scan:
 ```bash
-python -m misra_checker.cli.main scan repo samples/simple_repo \
+./run_tool.sh scan repo samples/simple_repo \
   --output-dir out --format json --format html
 ```
 
 Single-file scan:
 ```bash
-python -m misra_checker.cli.main scan file samples/simple_repo/src/main.c \
+./run_tool.sh scan file samples/simple_repo/src/main.c \
   --output-dir out --format json
 ```
 
 Scan with baseline/suppression/deviation/history:
 ```bash
-python -m misra_checker.cli.main scan repo samples/simple_repo \
+./run_tool.sh scan repo samples/simple_repo \
   --baseline-file out/baseline.json \
   --suppression-file samples/suppressions.yaml \
   --deviation-file samples/deviations.yaml \
@@ -95,13 +97,18 @@ python -m misra_checker.cli.main scan repo samples/simple_repo \
 
 Create baseline from JSON report:
 ```bash
-python -m misra_checker.cli.main baseline create \
+./run_tool.sh baseline create \
   --scan-json out/<scan-id>.json --output out/baseline.json
 ```
 
 Show history trend:
 ```bash
-python -m misra_checker.cli.main history trend --db .misra_checker/history.db --limit 10
+./run_tool.sh history trend --db .misra_checker/history.db --limit 10
+```
+
+Alternative CLI entrypoint after install:
+```bash
+misra-checker --help
 ```
 
 ## GUI usage
