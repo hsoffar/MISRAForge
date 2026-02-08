@@ -1,0 +1,18 @@
+profile: default
+report:
+  output_dir: out
+  formats: [json, html]
+rules:
+  include_ids: []
+  exclude_ids: []
+  categories: []
+  languages: []
+  levels: []
+suppression:
+  file: null
+baseline:
+  file: null
+deviation:
+  file: null
+storage:
+  history_db: .misra_checker/history.db

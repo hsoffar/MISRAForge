@@ -1,0 +1,4 @@
+- rule_id: MC3A-TAB-CHAR
+  path_pattern: "*main.c"
+  line: 6
+  reason: "Legacy formatting accepted for now"

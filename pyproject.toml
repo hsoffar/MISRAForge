@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "misra-checker"
+version = "0.1.0"
+description = "Local MISRA-oriented static analysis MVP for C/C++"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "MISRA Checker Contributors" }]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+gui = [
+  "PySide6>=6.6",
+]
+
+[project.scripts]
+misra-checker = "misra_checker.cli.main:main"
+misra-checker-gui = "misra_checker.gui.app:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
