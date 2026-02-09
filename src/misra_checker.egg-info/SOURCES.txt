@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 src/misra_checker/__init__.py
@@ -7,6 +8,9 @@ src/misra_checker.egg-info/dependency_links.txt
 src/misra_checker.egg-info/entry_points.txt
 src/misra_checker.egg-info/requires.txt
 src/misra_checker.egg-info/top_level.txt
+src/misra_checker/api/__init__.py
+src/misra_checker/api/rule_content.py
+src/misra_checker/api/server.py
 src/misra_checker/baseline/__init__.py
 src/misra_checker/baseline/service.py
 src/misra_checker/cli/__init__.py
@@ -36,6 +40,7 @@ src/misra_checker/reports/exporters.py
 src/misra_checker/reports/serializers.py
 src/misra_checker/rules/__init__.py
 src/misra_checker/rules/base.py
+src/misra_checker/rules/coverage.py
 src/misra_checker/rules/engine.py
 src/misra_checker/rules/recommendations.py
 src/misra_checker/rules/starter.py
@@ -48,6 +53,10 @@ tests/test_config_loader.py
 tests/test_fingerprint.py
 tests/test_gui_entrypoint.py
 tests/test_parser_discovery.py
+tests/test_report_summary.py
+tests/test_rule_content_loader.py
 tests/test_rule_engine.py
+tests/test_rule_matrix.py
 tests/test_scan_service.py
+tests/test_web_file_browser.py
 tests/test_workflow_controls.py

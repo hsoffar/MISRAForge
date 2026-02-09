@@ -1,3 +1,4 @@
 [console_scripts]
 misra-checker = misra_checker.cli.main:main
+misra-checker-api = misra_checker.cli.main:main
 misra-checker-gui = misra_checker.gui.app:main

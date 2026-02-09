@@ -167,3 +167,228 @@
 
 ### Next obvious step
 - Install GUI dependency (`pip install -e .[gui]`) and run `python -m misra_checker.gui.app` to validate the interactive workflow end-to-end locally.
+
+## 2026-03-06 - Milestone 8
+### Completed
+- Improved report summaries with additional deterministic metrics:
+  - `summary.by_file`
+  - `summary.by_rule`
+  - `summary.rule_coverage` (available rules, hit rules, coverage percentage).
+- Upgraded HTML report UX to support local filtering/grouping (`file`, `rule`, `flat`) with status overview cards.
+- Added local web dashboard serving command:
+  - `web serve --scan-json ... --host ... --port ...`
+  - dashboard groups and filters findings interactively from the JSON report.
+- Stabilized output naming for latest artifacts:
+  - `out/report.json`
+  - `out/report.html`
+  - `out/report.csv`
+  - plus timestamped archives under `out/archive/`.
+- Extended GUI metrics/dashboard behavior with grouping and recent history panels.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 15 passed.
+- `PYTHONPATH=src python -m misra_checker.cli.main scan repo samples/simple_repo --output-dir out --format json --format html --format csv` -> successful; stable report filenames created.
+- `PYTHONPATH=src python -m misra_checker.cli.main web serve --scan-json out/report.json --host 127.0.0.1 --port 8765` with local probe to `http://127.0.0.1:8765/data` -> successful JSON response.
+
+### Incomplete / limitations
+- Web dashboard currently visualizes a single JSON report file per run and does not yet provide multi-run trend pages.
+- GUI and web dashboard currently do not include inline source viewer/deep code navigation.
+
+## 2026-03-06 - Milestone 9
+### Completed
+- Added rule quality matrix generation to identify per-rule implementation/test/detection coverage:
+  - CLI: `rules matrix --scan-json ... --tests-dir ... --output ...`
+  - JSON output includes totals and per-rule rows.
+- Added rule inventory command:
+  - CLI: `rules list` (text or JSON).
+- Added local automation API server for tool integrations:
+  - CLI: `api serve --scan-json ... --tests-dir ... --host ... --port ...`
+  - endpoints: `/health`, `/rules`, `/scan/latest`, `/rules/matrix`.
+- Upgraded dashboard runtime:
+  - serves matrix data endpoint (`/matrix`),
+  - visual charts for status and top files,
+  - rule quality table with implementation/testing/detection fields.
+- Expanded single launcher (`misraforge.sh`) with centralized workflows:
+  - `quality` (tests + rule matrix),
+  - `all` (tests + scan + reports + rule matrix),
+  - `api`,
+  - existing `web`, `gui`, `history`, `scan`, `setup`.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 18 passed.
+- `./misraforge.sh quality` -> successful.
+- `./misraforge.sh all samples/simple_repo` -> successful; generated reports and `out/rule-matrix.json`.
+- `api serve` probe:
+  - `/health` -> status ok
+  - `/rules/matrix` -> returns matrix JSON
+- `web serve` probe:
+  - `/matrix` -> returns matrix JSON
+
+### Incomplete / limitations
+- The project still does **not** claim complete MISRA C++:2023 rule coverage.
+- Current implementation remains a deterministic starter pack with a stronger coverage/testing visibility layer.
+
+## 2026-03-06 - Milestone 10
+### Completed
+- Added FastAPI-based web control dashboard (`web serve --engine fastapi`) focused on full workflow control:
+  - run repository scans and single-file scans from the web UI,
+  - browse issues grouped by file/rule/status/flat,
+  - click file entries to filter findings and launch per-file scan.
+- Added deviation visibility by rule in the dashboard summary panel.
+- Added rule details interaction (hover/click) with extended metadata panel.
+- Added local rule-content pack support in the web UI:
+  - open demo pack: `samples/rule_content_open.json`,
+  - private/local template: `samples/rule_content_local.example.json`.
+- Added FastAPI endpoints supporting dashboard interactions:
+  - `/api/scan/run`
+  - `/api/scan/latest`
+  - `/api/summary`
+  - `/api/findings`
+  - `/api/rules`
+  - `/api/rules/{rule_id}`
+  - `/api/rules/matrix`
+  - `/api/health`
+- Added `web` optional dependency group (`fastapi`, `uvicorn`) and updated launcher/setup to support it.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 19 passed.
+- `PYTHONPATH=src python -m misra_checker.cli.main web serve --help` -> shows fastapi/baseline engine options.
+- Local fastapi probe:
+  - `/api/summary` returns grouped summary
+  - `/api/rules/MC3R-FORBIDDEN-GOTO` returns rule details
+  - `POST /api/scan/run` with single-file target returns successful run payload.
+
+### Incomplete / limitations
+- Rule full text availability depends on local licensed content you provide; repository includes open demo content only.
+- Dashboard currently uses client-side rendering without server-side auth/session controls.
+
+## 2026-03-06 - Milestone 11
+### Completed
+- Redesigned FastAPI dashboard layout for easier navigation:
+  - left pane: project browser (folders/files),
+  - center pane: grouped issues + combined filters,
+  - right pane: rules list + rule detail panel + deviation summary.
+- Added project browser backend endpoint:
+  - `/api/files?root=<path>` returns folder/file tree for C/C++ source browsing.
+- Expanded issue filtering in `/api/findings` with:
+  - severity,
+  - status,
+  - rule_id,
+  - file_path,
+  - text query,
+  - grouping mode.
+- Added UI actions to select file from browser and run per-file scans directly.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 20 passed.
+- FastAPI probe:
+  - `/api/files?root=samples/simple_repo` -> returns folder/file tree payload.
+  - `/api/findings?...` -> returns grouped/filtered response shape.
+
+## 2026-03-06 - Milestone 12
+### Completed
+- Added a new professional GUI track under `ui/` using React + TypeScript (Vite).
+- Implemented tabbed navigation:
+  - `Overview`
+  - `Explorer`
+  - `Findings`
+  - `Rules`
+  - `Deviations`
+- Added floating flyover behavior for rule details in `Rules` tab (hover-based panel near cursor).
+- Added explorer-focused navigation in frontend:
+  - file tree browsing,
+  - file click sets file filter and target for quick per-file scan flow.
+- Integrated frontend with existing FastAPI endpoints via Vite proxy (`/api -> :8765`).
+- Added FastAPI CORS middleware for local frontend dev origins (`127.0.0.1:5173`, `localhost:5173`).
+- Extended launcher with frontend commands:
+  - `./misraforge.sh ui`
+  - `./misraforge.sh ui-build`
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 20 passed.
+- `cd ui && npm run build` -> successful production build generated.
+
+## 2026-03-06 - Milestone 13
+### Completed
+- Reworked the new React GUI visual design to a compact enterprise layout:
+  - left vertical navigation rail with persistent tabs,
+  - compact top scan controls,
+  - clearer content hierarchy and reduced visual noise.
+- Rebuilt Findings experience into a professional tri-pane workflow:
+  - left filter panel,
+  - center grouped issue list,
+  - right issue inspector.
+- Upgraded rule hover behavior to floating flyover cards (near cursor) instead of bottom-panel-only behavior.
+- Updated color system to neutral/light, high-density styling for easier scanning and navigation.
+
+### Smoke checks
+- `cd ui && npm run build` -> successful.
+- `PYTHONPATH=src pytest -q` -> 20 passed.
+
+## 2026-03-06 - Milestone 14
+### Completed
+- Removed legacy `web` command path and old `src/misra_checker/web/` implementation.
+- Consolidated all runtime endpoints behind `api serve` under `/api/*`.
+- Migrated required UI backend behaviors into `src/misra_checker/api/server.py`:
+  - scan run/latest,
+  - summary/findings/rules/rule-matrix,
+  - file browser tree endpoint.
+- Updated launcher workflow:
+  - `./misraforge.sh ui` now auto-starts API backend + React UI dev server.
+  - no separate `web` command required.
+- Updated UI dev proxy to the API port (`8775`).
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 19 passed.
+- `cd ui && npm run build` -> successful.
+- API probe:
+  - `/api/summary` returns expected payload,
+  - `/api/files?root=samples/simple_repo` returns folder/file tree.
+
+## 2026-03-07 - Milestone 15
+### Completed
+- Added JSON rule-pack integration for easy rule extension without Python edits.
+- Added regex-based dynamic rule execution from pack files.
+- Added scan CLI support:
+  - `scan ... --rule-pack <path.json>`
+- Added API scan support:
+  - `POST /api/scan/run` with `rule_pack_file`.
+- Added sample pack:
+  - `samples/custom_rules_demo.json`.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 23 passed.
+- Scan with custom pack produced custom rule finding (`ORG-DEMO-PRINTF`).
+
+## 2026-03-07 - Milestone 16
+### Completed
+- Moved default built-in rule catalog into JSON:
+  - `src/misra_checker/rules/default_rule_pack.json`
+- Switched default registry and recommendations to load from this JSON catalog.
+- Kept engine check implementations in Python but activation/metadata/recommendations are JSON-driven.
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 23 passed.
+
+## 2026-03-07 - Milestone 17
+### Completed
+- Refactored rule implementation into modular checker modules:
+  - `rules/checkers/lexical.py`
+  - `rules/checkers/control_flow.py`
+  - `rules/checkers/preprocessor.py`
+  - `rules/checkers/type_safety.py`
+  - `rules/checkers/numeric.py`
+  - `rules/checkers/maintainability.py`
+  - `rules/checkers/language_subset.py`
+  - `rules/checkers/io_usage.py`
+- Added common checker factory registry API:
+  - `rules/checkers/registry.py`
+- Default JSON catalog now controls built-in checker binding through:
+  - `implementation: { \"type\": \"builtin\", \"name\": \"...\" }`
+- Added additional built-in rules integrated through JSON+modules:
+  - `MC3A-PRINTF`
+  - `MC3R-MULTI-RETURN`
+
+### Smoke checks
+- `PYTHONPATH=src pytest -q` -> 23 passed.
+- `rules matrix` -> `total=15 implemented=15 tested=15`.

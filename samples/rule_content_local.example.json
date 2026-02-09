@@ -1,0 +1,14 @@
+{
+  "pack_name": "local-licensed-rule-content-example",
+  "notes": "Template for privately maintained local rule details. Do not commit licensed proprietary text if policy forbids it.",
+  "rules": [
+    {
+      "rule_id": "MC3R-FORBIDDEN-GOTO",
+      "source": "Your licensed local source",
+      "license": "Your local license terms",
+      "summary": "Internal summary for reviewers.",
+      "full_text": "Optional local full text if your license permits local storage/use.",
+      "notes": "Use this file path with --rule-content-file."
+    }
+  ]
+}

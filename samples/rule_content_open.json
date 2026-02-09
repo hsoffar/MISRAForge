@@ -1,0 +1,126 @@
+{
+  "pack_name": "open-demo-rule-content",
+  "notes": "Open local demo content for GUI testing. Not MISRA normative text.",
+  "rules": [
+    {
+      "rule_id": "MC3A-LINE-LENGTH",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Long lines reduce readability and make reviews harder.",
+      "full_text": "Demo guidance: keep source lines within project length limits and wrap expressions cleanly.",
+      "notes": "Set a project-wide threshold (for example 100-120 characters)."
+    },
+    {
+      "rule_id": "MC3A-TRAILING-WHITESPACE",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Trailing whitespace creates noisy diffs and formatting drift.",
+      "full_text": "Demo guidance: remove trailing spaces automatically via editor/formatter hooks.",
+      "notes": "Enable checks in CI."
+    },
+    {
+      "rule_id": "MC3R-FORBIDDEN-GOTO",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Avoid unstructured jumps when possible.",
+      "full_text": "Demo guidance: avoid goto except in tightly justified low-level error-cleanup paths.",
+      "notes": "Use structured alternatives and document exceptions."
+    },
+    {
+      "rule_id": "MC3R-CONTROL-BRACES",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Control statements should use explicit braces.",
+      "full_text": "Demo guidance: always brace if/for/while bodies, even single statements, to avoid ambiguity.",
+      "notes": "This helps reduce defect risk during edits."
+    },
+    {
+      "rule_id": "MC3R-ASSIGN-IN-CONDITION",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Assignments in controlling expressions can hide intent.",
+      "full_text": "Demo guidance: avoid assignments within if/while/for conditions; split assignment and condition checks.",
+      "notes": "Allow only with explicit policy and review if unavoidable."
+    },
+    {
+      "rule_id": "MC3A-MACRO-FUNC",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Function-like macros can hide side effects.",
+      "full_text": "Demo guidance: prefer inline/constexpr functions over function-like macros where practical.",
+      "notes": "If macros are used, enforce parenthesized parameters and outputs."
+    },
+    {
+      "rule_id": "MC3R-CAST-CSTYLE",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "C-style casts reduce clarity around conversion intent.",
+      "full_text": "Demo guidance: use explicit C++ casts (static_cast, reinterpret_cast, const_cast) with clear intent.",
+      "notes": "Require code review for low-level reinterpret casts."
+    },
+    {
+      "rule_id": "MC3R-FLOAT-EQUALITY",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Direct equality/inequality checks on floating-point values are fragile.",
+      "full_text": "Demo guidance: compare floating-point values using tolerance/epsilon strategies.",
+      "notes": "Use domain-appropriate tolerance values."
+    },
+    {
+      "rule_id": "MC3R-SWITCH-DEFAULT",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Switch statements should include a default path.",
+      "full_text": "Demo guidance: add a default clause for completeness, defensive handling, or explicit no-action behavior.",
+      "notes": "Document intentional exceptions."
+    },
+    {
+      "rule_id": "MC3R-SWITCH-BREAK",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Each switch case should terminate explicitly.",
+      "full_text": "Demo guidance: end each case with break/return/throw, or explicit documented fallthrough marker.",
+      "notes": "Unintended fallthrough is a common defect source."
+    },
+    {
+      "rule_id": "MC3R-MAGIC-NUMBER",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Unnamed numeric literals can hide intent.",
+      "full_text": "Demo guidance: replace repeated or non-trivial literals with named constants or enums.",
+      "notes": "Allow exceptions for clear primitive constants by policy."
+    },
+    {
+      "rule_id": "MC3R-FORBIDDEN-RECURSION",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Recursion complicates bounded stack analysis.",
+      "full_text": "Demo guidance: avoid recursion in safety-critical code unless bounded and justified.",
+      "notes": "Provide stack depth evidence if recursion is retained."
+    },
+    {
+      "rule_id": "MC3A-TAB-CHAR",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Tabs can lead to inconsistent formatting.",
+      "full_text": "Demo guidance: use spaces only in source files and enforce via formatting checks.",
+      "notes": "Keep style checks in CI."
+    },
+    {
+      "rule_id": "MC3A-PRINTF",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Direct printf calls should be reviewed against project policy.",
+      "full_text": "Demo guidance: avoid direct stdout logging in production paths; use logging abstraction with level control.",
+      "notes": "Allow local debugging use only under policy."
+    },
+    {
+      "rule_id": "MC3R-MULTI-RETURN",
+      "source": "Local open demo pack",
+      "license": "Project local demo content",
+      "summary": "Multiple return statements should be reviewed.",
+      "full_text": "Demo guidance: prefer single structured exits where feasible for analysis clarity, with justified exceptions.",
+      "notes": "Use as manual-review signal rather than strict prohibition."
+    }
+  ]
+}

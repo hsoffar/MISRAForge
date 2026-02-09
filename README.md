@@ -29,11 +29,14 @@ No copyrighted MISRA rule text is embedded.
   - `confirmed`, `possible`, `manual_review`, `suppressed`, `baseline`, `deviation`.
 - Rule filtering by ID (CLI) and by ID/category/language/level (config).
 - JSON, HTML, and CSV reports.
+  - HTML report includes grouping/filtering by file, rule, and flat list.
 - Baseline creation and baseline comparison.
 - Suppressions (line/file/rule-level via YAML patterns).
 - Deviation records with justification (fingerprint keyed).
 - Local SQLite scan history with trend summaries.
 - GUI MVP (PySide6) with required tabs and basic scan workflow.
+- Local automation API (`api serve`) for tool integrations.
+- Rule quality matrix per rule: implementation, test references, and scan detection counts.
 
 ## Project layout
 - `src/misra_checker/cli/`
@@ -65,7 +68,31 @@ GUI dependency:
 pip install -e '.[gui]'
 ```
 
+Web dashboard/API dependency:
+```bash
+pip install -e '.[web]'
+```
+
+Production GUI frontend dependency:
+```bash
+cd ui
+npm install
+```
+
 This project requires Python `>=3.10` (`pyproject.toml`).
+
+## Single launcher (recommended)
+Use one script for setup, scan, API, UI, history, and GUI:
+```bash
+./misraforge.sh setup
+./misraforge.sh scan repo samples/simple_repo --output-dir out --format json --format html
+./misraforge.sh quality
+./misraforge.sh all samples/simple_repo
+./misraforge.sh ui
+./misraforge.sh api
+./misraforge.sh history
+./misraforge.sh gui
+```
 
 ## CLI usage
 Help:
@@ -98,7 +125,7 @@ Scan with baseline/suppression/deviation/history:
 Create baseline from JSON report:
 ```bash
 ./run_tool.sh baseline create \
-  --scan-json out/<scan-id>.json --output out/baseline.json
+  --scan-json out/report.json --output out/baseline.json
 ```
 
 Show history trend:
@@ -110,6 +137,86 @@ Alternative CLI entrypoint after install:
 ```bash
 misra-checker --help
 ```
+
+The latest run always writes stable output filenames in `out/`:
+- `out/report.json`
+- `out/report.html`
+- `out/report.csv` (if enabled)
+Archived copies are stored under `out/archive/`.
+
+Build rule-by-rule test/coverage matrix:
+```bash
+./run_tool.sh rules matrix --scan-json out/report.json --tests-dir tests --output out/rule-matrix.json
+```
+
+Professional tabbed frontend (React + TypeScript):
+1. Start UI (it auto-starts local API backend):
+```bash
+./misraforge.sh ui
+```
+2. Open:
+- frontend: `http://127.0.0.1:5173`
+- backend api/docs: `http://127.0.0.1:8775/docs`
+
+Frontend tabs currently implemented:
+- `Overview`
+- `Explorer`
+- `Findings`
+- `Rules`
+- `Deviations`
+
+Rule content options for the GUI:
+1. Open demo pack:
+   - `samples/rule_content_open.json` (included for local testing)
+2. Private local pack:
+   - copy `samples/rule_content_local.example.json` and point `--rule-content-file` to your private file
+   - use this only with content your license permits
+
+Run local JSON API:
+```bash
+./run_tool.sh api serve --scan-json out/report.json --tests-dir tests --host 127.0.0.1 --port 8775
+```
+Endpoints:
+- `/api/health`
+- `/api/rules`
+- `/api/scan/latest`
+- `/api/rules/matrix`
+- `/api/summary`
+- `/api/findings`
+- `/api/files`
+
+## Add rules via JSON (no code changes)
+You can add custom deterministic regex rules through a JSON pack.
+
+Default built-in rule catalog is also JSON-based:
+- `src/misra_checker/rules/default_rule_pack.json`
+
+This means:
+- default rule metadata and recommendations come from that JSON file,
+- default built-in checker binding comes from that JSON file (`implementation` field),
+- custom regex rules come from `--rule-pack`.
+
+Checker architecture:
+- common checker API: `src/misra_checker/rules/base.py`
+- modular checker implementations: `src/misra_checker/rules/checkers/`
+- checker factory registry: `src/misra_checker/rules/checkers/registry.py`
+- default JSON catalog chooses which checker module is active per rule.
+
+Example pack:
+- `samples/custom_rules_demo.json`
+
+Run scan with pack:
+```bash
+./run_tool.sh scan repo samples/simple_repo \
+  --output-dir out --format json \
+  --rule-pack samples/custom_rules_demo.json
+```
+
+Rule-pack item fields:
+- `rule_id`, `title`, `category`, `level`, `severity`, `languages`
+- `pattern` (regex), `message`, `status`
+- optional: `flags` (`IGNORECASE`, `MULTILINE`)
+- optional: `recommendation`, `tags`, `rationale_summary`
 
 ## GUI usage
 ```bash
@@ -130,6 +237,31 @@ PYTHONPATH=src pytest -q
 - GUI requires PySide6 and may not run until installed.
 - Diff/changed-files-only scanning is not yet implemented.
 - Deviation workflow is fingerprint-based and lacks full approval lifecycle.
+
+## Coverage metrics
+- Current implemented deterministic starter rules: **5**
+  - `MC3R-FORBIDDEN-GOTO`
+  - `MC3A-MACRO-FUNC`
+  - `MC3R-CAST-CSTYLE`
+  - `MC3R-FORBIDDEN-RECURSION`
+  - `MC3A-TAB-CHAR`
+- JSON reports now include:
+  - `summary.by_file`
+  - `summary.by_rule`
+  - `summary.rule_coverage`:
+    - total available rules
+    - rules that triggered at least one finding
+    - percentage coverage in the scan
+- Rule matrix now also reports per-rule:
+  - implemented/not implemented in engine,
+  - test references in `tests/`,
+  - detections in the latest scan payload.
+
+## Product plan (4 steps)
+1. Reporting quality (done now): grouped HTML + local web dashboard + coverage metrics.
+2. Rule expansion: increase deterministic rule pack by priority categories (control flow, initialization, conversions, memory, interfaces) with tests per rule.
+3. Workflow hardening: baseline/deviation approvals, diff-only scans, CI integration, and trend quality gates.
+4. Full product: stable web app UX, role-ready review flow, extensible plugin ecosystem, and larger validated MISRA coverage.
 
 ## Documentation
 - Architecture: `docs/ARCHITECTURE.md`

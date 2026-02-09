@@ -1,0 +1,422 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  background: #f3f5f7;
+  color: #182230;
+}
+
+.sidebar {
+  background: #0f1720;
+  color: #d6deea;
+  padding: 16px 12px;
+  border-right: 1px solid #253447;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.logo-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #95a7bc;
+}
+
+.nav {
+  margin-top: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.nav-btn {
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #d6deea;
+  padding: 9px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.nav-btn:hover {
+  background: #1d2b3d;
+}
+
+.nav-btn.active {
+  background: #ffffff;
+  color: #0f1720;
+  border-color: #d0d7de;
+}
+
+.main {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.scan-controls,
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scan-controls input:first-of-type {
+  min-width: 320px;
+}
+
+.status-row {
+  background: #ffffff;
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  padding: 8px 10px 10px 10px;
+  font-size: 13px;
+  color: #4c5969;
+}
+
+.status-row.success {
+  border-color: #3fb950;
+}
+
+.status-row.error {
+  border-color: #d1242f;
+}
+
+.status-text {
+  margin-bottom: 6px;
+}
+
+.progress-wrap {
+  width: 100%;
+  height: 8px;
+  background: #eef3f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #0969da;
+  transition: width 220ms ease;
+}
+
+.progress-bar.running {
+  background: linear-gradient(90deg, #0969da 0%, #2c93ff 50%, #0969da 100%);
+  background-size: 180% 100%;
+  animation: progressSweep 1.2s linear infinite;
+}
+
+@keyframes progressSweep {
+  from { background-position: 0% 0%; }
+  to { background-position: 180% 0%; }
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.kpi {
+  background: #ffffff;
+  border: 1px solid #d8dee4;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.kpi-k {
+  font-size: 12px;
+  color: #576678;
+}
+
+.kpi-v {
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.panel-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.panel-grid.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.findings-layout {
+  grid-template-columns: 260px 1fr 340px;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #d8dee4;
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 0;
+}
+
+.panel h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.filters-panel {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.filters-panel label {
+  font-size: 12px;
+  color: #58677a;
+}
+
+.selected-file {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 12px;
+  color: #344151;
+  word-break: break-all;
+}
+
+.list-panel,
+.detail-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.groups-scroll,
+.tree-scroll {
+  overflow: auto;
+  max-height: 62vh;
+}
+
+.group-block {
+  margin-bottom: 10px;
+}
+
+.group-title {
+  font-size: 12px;
+  color: #4d617a;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.mini-bars {
+  display: grid;
+  gap: 6px;
+}
+
+.mini-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 36px;
+  gap: 6px;
+  align-items: center;
+}
+
+.mini-label {
+  font-size: 12px;
+  color: #475467;
+  text-transform: capitalize;
+}
+
+.mini-track {
+  height: 8px;
+  background: #edf2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mini-fill {
+  height: 100%;
+  background: #6a95c4;
+}
+
+.mini-fill.status {
+  background: #4f7cab;
+}
+
+.mini-fill.sev-high {
+  background: #d1242f;
+}
+
+.mini-fill.sev-medium {
+  background: #bc4c00;
+}
+
+.mini-fill.sev-low {
+  background: #6f42c1;
+}
+
+.mini-fill.sev-info {
+  background: #1f6feb;
+}
+
+.mini-value {
+  font-size: 12px;
+  color: #66778c;
+  text-align: right;
+}
+
+.detail-body {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #58687a;
+  margin-bottom: 6px;
+}
+
+.tree-node details {
+  margin-left: 8px;
+}
+
+.tree-node summary {
+  cursor: pointer;
+  color: #334155;
+  font-size: 13px;
+}
+
+.file-link {
+  display: block;
+  margin: 2px 0;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  color: #0b69c7;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e4e8ec;
+  text-align: left;
+  vertical-align: top;
+  padding: 6px;
+}
+
+tbody tr:hover {
+  background: #f6f8fa;
+}
+
+input,
+select,
+button {
+  background: #ffffff;
+  border: 1px solid #c9d2dc;
+  border-radius: 8px;
+  color: #182230;
+  padding: 8px;
+  font-size: 13px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button.primary {
+  background: #0969da;
+  border-color: #0969da;
+  color: #ffffff;
+}
+
+button.primary:hover {
+  background: #0857b8;
+}
+
+.empty {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.flyover {
+  position: fixed;
+  z-index: 30;
+  max-width: 460px;
+  pointer-events: none;
+  background: #0f1720;
+  color: #d6deea;
+  border: 1px solid #2b3e53;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 16px 36px rgba(8, 14, 22, 0.35);
+}
+
+.fly-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.fly-meta {
+  font-size: 11px;
+  color: #9fb0c4;
+  margin-bottom: 4px;
+}
+
+.fly-body {
+  font-size: 12px;
+  line-height: 1.35;
+  margin-top: 6px;
+}
+
+@media (max-width: 1300px) {
+  .findings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-grid.two {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+}

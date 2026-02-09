@@ -21,10 +21,15 @@ dev = [
 gui = [
   "PySide6>=6.6",
 ]
+web = [
+  "fastapi>=0.110",
+  "uvicorn>=0.28",
+]
 
 [project.scripts]
 misra-checker = "misra_checker.cli.main:main"
 misra-checker-gui = "misra_checker.gui.app:main"
+misra-checker-api = "misra_checker.cli.main:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

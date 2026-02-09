@@ -7,14 +7,9 @@ from misra_checker.findings.fingerprint import finding_fingerprint
 from misra_checker.parser.models import ParsedDocument
 from misra_checker.registry.rule_registry import RuleRegistry
 from misra_checker.rules.base import Rule
+from misra_checker.rules.checkers.registry import build_checker
+from misra_checker.rules.default_pack import load_default_pack
 from misra_checker.rules.recommendations import recommendation_for
-from misra_checker.rules.starter import (
-    CStyleCastRule,
-    GotoRule,
-    MacroFunctionRule,
-    RecursionRule,
-    TabCharacterRule,
-)
 
 
 @dataclass(frozen=True)
@@ -27,20 +22,43 @@ class RuleFilter:
 
 
 def _build_rule_objects(registry: RuleRegistry) -> list[Rule]:
-    metadata = {item.rule_id: item for item in registry.all()}
-    return [
-        GotoRule(metadata=metadata["MC3R-FORBIDDEN-GOTO"]),
-        MacroFunctionRule(metadata=metadata["MC3A-MACRO-FUNC"]),
-        CStyleCastRule(metadata=metadata["MC3R-CAST-CSTYLE"]),
-        RecursionRule(metadata=metadata["MC3R-FORBIDDEN-RECURSION"]),
-        TabCharacterRule(metadata=metadata["MC3A-TAB-CHAR"]),
-    ]
+    payload = load_default_pack()
+    metadata_by_id = {item.rule_id: item for item in registry.all()}
+    out: list[Rule] = []
+    for item in payload.get("rules", []):
+        if not isinstance(item, dict):
+            continue
+        rule_id = item.get("rule_id")
+        if not isinstance(rule_id, str):
+            continue
+        meta = metadata_by_id.get(rule_id)
+        if meta is None:
+            continue
+        implementation = item.get("implementation", {})
+        if not isinstance(implementation, dict):
+            continue
+        if implementation.get("type") != "builtin":
+            continue
+        name = implementation.get("name")
+        if not isinstance(name, str) or not name:
+            continue
+        params = implementation.get("params", {})
+        if not isinstance(params, dict):
+            params = {}
+        out.append(build_checker(name=name, metadata=meta, params=params))
+    return out
 
 
 class RuleEngine:
-    def __init__(self, registry: RuleRegistry) -> None:
+    def __init__(
+        self,
+        registry: RuleRegistry,
+        extra_rules: list[Rule] | None = None,
+        recommendation_overrides: dict[str, str] | None = None,
+    ) -> None:
         self.registry = registry
-        self.rules = _build_rule_objects(registry)
+        self.rules = _build_rule_objects(registry) + list(extra_rules or [])
+        self.recommendation_overrides = dict(recommendation_overrides or {})
 
     def _accept(self, rule: Rule, rule_filter: RuleFilter) -> bool:
         meta = rule.metadata
@@ -70,7 +88,10 @@ class RuleEngine:
                     continue
 
                 for finding in rule.run(doc):
-                    finding.recommendation = recommendation_for(finding.rule_id)
+                    finding.recommendation = self.recommendation_overrides.get(
+                        finding.rule_id,
+                        recommendation_for(finding.rule_id),
+                    )
                     finding.fingerprint = finding_fingerprint(finding)
                     findings.append(finding)
 

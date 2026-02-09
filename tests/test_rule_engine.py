@@ -18,6 +18,7 @@ def test_rule_engine_finds_sample_issues() -> None:
 
     assert "MC3R-FORBIDDEN-GOTO" in rule_ids
     assert "MC3A-MACRO-FUNC" in rule_ids
+    assert "MC3A-PRINTF" in rule_ids
     assert "MC3R-FORBIDDEN-RECURSION" in rule_ids
     assert "MC3A-TAB-CHAR" in rule_ids
 

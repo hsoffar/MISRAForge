@@ -1,0 +1,18 @@
+{
+  "pack_name": "custom-regex-demo",
+  "rules": [
+    {
+      "rule_id": "ORG-DEMO-PRINTF",
+      "title": "Review printf usage",
+      "category": "io_usage",
+      "level": "advisory",
+      "severity": "low",
+      "languages": ["c", "cpp"],
+      "pattern": "\\bprintf\\s*\\(",
+      "message": "printf call detected (review for project policy)",
+      "status": "manual_review",
+      "flags": ["IGNORECASE"],
+      "recommendation": "Use project logging abstraction instead of direct printf in production code."
+    }
+  ]
+}

@@ -19,6 +19,8 @@ def test_scan_service_repo_exports_json_html(tmp_path: Path) -> None:
     assert "json" in outputs and "html" in outputs
     assert Path(outputs["json"]).exists()
     assert Path(outputs["html"]).exists()
+    assert outputs["json"].endswith("report.json")
+    assert outputs["html"].endswith("report.html")
 
 
 def test_scan_service_single_file(tmp_path: Path) -> None:

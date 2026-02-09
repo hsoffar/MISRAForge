@@ -5,9 +5,11 @@ import json
 from pathlib import Path
 
 from misra_checker import __version__
+from misra_checker.api.server import serve_api
 from misra_checker.baseline.service import write_baseline
 from misra_checker.core.models import Finding, Language, ScanRequest, ScanTargetType, Severity, SourceLocation
 from misra_checker.core.scan_service import ScanService
+from misra_checker.rules.coverage import build_rule_matrix, load_scan_payload
 from misra_checker.storage.history import HistoryStore
 
 
@@ -41,6 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--suppression-file", help="Suppression YAML file")
         p.add_argument("--deviation-file", help="Deviation YAML file")
         p.add_argument("--history-db", help="SQLite path for scan history")
+        p.add_argument("--rule-pack", help="JSON rule pack file for custom regex-based rules")
 
     baseline = sub.add_parser("baseline", help="Baseline operations")
     baseline_sub = baseline.add_subparsers(dest="baseline_cmd", required=True)
@@ -53,6 +56,28 @@ def build_parser() -> argparse.ArgumentParser:
     trend = history_sub.add_parser("trend", help="Show scan trend")
     trend.add_argument("--db", default=".misra_checker/history.db", help="History SQLite file")
     trend.add_argument("--limit", type=int, default=10)
+
+    rules = sub.add_parser("rules", help="Rule inventory and coverage")
+    rules_sub = rules.add_subparsers(dest="rules_cmd", required=True)
+    rules_list = rules_sub.add_parser("list", help="List known rules")
+    rules_list.add_argument("--json", action="store_true", help="Print JSON output")
+    matrix = rules_sub.add_parser("matrix", help="Build rule coverage/test matrix")
+    matrix.add_argument("--scan-json", default="out/report.json", help="Path to scan JSON report")
+    matrix.add_argument("--tests-dir", default="tests", help="Path to tests directory")
+    matrix.add_argument("--output", help="Optional output JSON file path")
+
+    api = sub.add_parser("api", help="Automation API server")
+    api_sub = api.add_subparsers(dest="api_cmd", required=True)
+    api_serve = api_sub.add_parser("serve", help="Serve local JSON API endpoints")
+    api_serve.add_argument("--scan-json", default="out/report.json", help="Path to scan JSON report")
+    api_serve.add_argument("--tests-dir", default="tests", help="Path to tests directory")
+    api_serve.add_argument(
+        "--rule-content-file",
+        default="samples/rule_content_open.json",
+        help="Local JSON file with optional rule summaries/full text metadata.",
+    )
+    api_serve.add_argument("--host", default="127.0.0.1", help="Host bind address")
+    api_serve.add_argument("--port", type=int, default=8775, help="Host port")
 
     return parser
 
@@ -72,6 +97,7 @@ def _run_scan(args: argparse.Namespace) -> int:
         suppression_file=args.suppression_file,
         deviation_file=args.deviation_file,
         history_db_path=args.history_db,
+        rule_pack_file=args.rule_pack,
     )
 
     try:
@@ -80,7 +106,7 @@ def _run_scan(args: argparse.Namespace) -> int:
         print(f"Scan failed: {exc}")
         return 2
 
-    print(f"Scan complete: {result.scan_id}")
+    print("Run complete")
     print(f"Analyzed files: {len(result.analyzed_files)}")
     print(f"Findings: {len(result.findings)}")
     if result.parse_diagnostics:
@@ -138,10 +164,56 @@ def _run_history_trend(args: argparse.Namespace) -> int:
     for row in rows:
         summary = row["summary"]
         print(
-            f"{row['finished_at']} {row['scan_id']} total={row['total_findings']} "
+            f"{row['finished_at']} total={row['total_findings']} "
             f"new={summary.get('new', 0)} baseline={summary.get('baseline', 0)} "
             f"suppressed={summary.get('suppressed', 0)} deviation={summary.get('deviation', 0)}"
         )
+    return 0
+
+
+def _run_rules_list(args: argparse.Namespace) -> int:
+    rows = build_rule_matrix()
+    if args.json:
+        print(json.dumps(rows, indent=2))
+        return 0
+
+    for row in rows["rules"]:
+        print(
+            f"{row['rule_id']} | category={row['category']} | level={row['level']} | "
+            f"implemented={row['implemented']} tested={row['tested']}"
+        )
+    return 0
+
+
+def _run_rules_matrix(args: argparse.Namespace) -> int:
+    matrix = build_rule_matrix(load_scan_payload(args.scan_json), args.tests_dir)
+    if args.output:
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(matrix, indent=2), encoding="utf-8")
+        print(f"Rule matrix written: {output_path}")
+    totals = matrix["totals"]
+    print(
+        f"Rule matrix: total={totals['rules_total']} implemented={totals['implemented_count']} "
+        f"tested={totals['tested_count']} detected={totals['detected_in_scan_count']}"
+    )
+    for row in matrix["rules"]:
+        files = ",".join(Path(path).name for path in row["test_files"])
+        print(
+            f"{row['rule_id']} implemented={row['implemented']} tested={row['tested']} "
+            f"detected={row['detected_count']} tests=[{files}]"
+        )
+    return 0
+
+
+def _run_api_serve(args: argparse.Namespace) -> int:
+    serve_api(
+        scan_json=args.scan_json,
+        tests_dir=args.tests_dir,
+        rule_content_file=args.rule_content_file,
+        host=args.host,
+        port=args.port,
+    )
     return 0
 
 
@@ -161,6 +233,15 @@ def main() -> int:
 
     if args.command == "history" and args.history_cmd == "trend":
         return _run_history_trend(args)
+
+    if args.command == "rules" and args.rules_cmd == "list":
+        return _run_rules_list(args)
+
+    if args.command == "rules" and args.rules_cmd == "matrix":
+        return _run_rules_matrix(args)
+
+    if args.command == "api" and args.api_cmd == "serve":
+        return _run_api_serve(args)
 
     parser.print_help()
     return 0

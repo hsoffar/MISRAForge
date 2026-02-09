@@ -5,3 +5,7 @@ pytest>=8.0
 
 [gui]
 PySide6>=6.6
+
+[web]
+fastapi>=0.110
+uvicorn>=0.28

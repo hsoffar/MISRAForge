@@ -108,6 +108,7 @@ class ScanRequest:
     suppression_file: str | None = None
     deviation_file: str | None = None
     history_db_path: str | None = None
+    rule_pack_file: str | None = None
 
     def normalized_target(self) -> str:
         return str(Path(self.target).resolve())
@@ -121,3 +122,4 @@ class ScanResult:
     findings: list[Finding]
     parse_diagnostics: list[str] = field(default_factory=list)
     analyzed_files: list[str] = field(default_factory=list)
+    available_rule_ids: list[str] = field(default_factory=list)
