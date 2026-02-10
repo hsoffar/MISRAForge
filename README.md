@@ -122,3 +122,7 @@ PYTHONPATH=src pytest -q
 
 ## Compliance note
 This tool does not claim full MISRA C++:2023 compliance yet. It provides a growing MISRA-oriented deterministic subset plus extensible custom rule packs.
+
+## License
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0-only).
+See `LICENSE` for full terms.
